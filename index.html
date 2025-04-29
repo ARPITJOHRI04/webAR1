@@ -10,22 +10,39 @@
   <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.3.2/aframe/build/aframe-ar.min.js"></script>
   <script src="https://unpkg.com/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
 
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
   <!-- Styles -->
   <style>
-    body { margin: 0; overflow: hidden; font-family: 'Poppins', sans-serif; background: #121212; }
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: 'Poppins', sans-serif;
+      background: #121212;
+    }
 
     #title {
       position: fixed;
       top: 10px;
-      width: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 600px;
       text-align: center;
       color: #ffffff;
       background: rgba(30, 30, 30, 0.9);
-      padding: 10px 0;
-      font-size: 24px;
+      padding: 10px;
+      font-size: 5vw;
       font-weight: bold;
       z-index: 1000;
       border-radius: 6px;
+    }
+
+    @media (min-width: 600px) {
+      #title {
+        font-size: 24px;
+      }
     }
 
     #buttons {
@@ -35,20 +52,36 @@
       transform: translateX(-50%);
       z-index: 999;
       display: flex;
-      gap: 12px;
       flex-wrap: wrap;
+      gap: 12px;
       justify-content: center;
+      padding: 0 10px;
+      width: 100%;
+      max-width: 600px;
     }
 
     .btn {
       background: rgba(40, 40, 40, 0.9);
       border: 1px solid #888;
       color: #f0f0f0;
-      padding: 12px 20px;
-      font-size: 14px;
-      border-radius: 10px;
+      padding: 12px;
+      font-size: 5vw;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
       transition: all 0.3s ease;
+    }
+
+    @media (min-width: 600px) {
+      .btn {
+        font-size: 18px;
+        width: 52px;
+        height: 52px;
+      }
     }
 
     .btn:hover {
@@ -85,10 +118,10 @@
   <div id="loader"></div>
 
   <div id="buttons">
-    <button class="btn" onclick="changeModel('Astronaut.glb')">Astronaut</button>
-    <button class="btn" onclick="changeModel('RobotExpressive.glb')">Robot</button>
-    <button class="btn" onclick="changeModel('Cesium-Man.glb')">Cesium Man</button>
-    <button class="btn" onclick="toggleRotation()">Toggle Rotate</button>
+    <button class="btn" onclick="changeModel('Astronaut.glb')" title="Astronaut"><i class="fas fa-user-astronaut"></i></button>
+    <button class="btn" onclick="changeModel('RobotExpressive.glb')" title="Robot"><i class="fas fa-robot"></i></button>
+    <button class="btn" onclick="changeModel('Cesium-Man.glb')" title="Cesium Man"><i class="fas fa-running"></i></button>
+    <button class="btn" onclick="toggleRotation()" title="Toggle Rotation"><i class="fas fa-sync-alt"></i></button>
   </div>
 
   <a-scene embedded arjs="sourceType: webcam;" shadow="type: pcfsoft">
@@ -96,29 +129,16 @@
       <img id="grassTexture" src="./grass.jpg" />
     </a-assets>
 
-    <!-- Lighting -->
     <a-entity light="type: ambient; color: #999"></a-entity>
     <a-entity light="type: directional; color: #ffffff; intensity: 0.9" position="1 2 1"></a-entity>
 
     <a-marker preset="hiro">
-      <a-plane 
-        position="0 0.001 0" 
-        rotation="-90 0 0" 
-        width="3" 
-        height="3" 
-        material="shader: flat; src: #grassTexture; side: double"
-        shadow="receive: false">
-      </a-plane>
+      <a-plane position="0 0.001 0" rotation="-90 0 0" width="3" height="3"
+        material="shader: flat; src: #grassTexture; side: double" shadow="receive: false"></a-plane>
 
-      <a-entity id="model" 
-                position="0 0 0" 
-                scale="1 1 1"
-                rotation="0 0 0"
-                visible="false"
-                shadow="cast: true"
-                gesture-handler
-                crossorigin="anonymous"
-                animation__fadein="property: material.opacity; from: 0; to: 1; dur: 1500; startEvents: fadein">
+      <a-entity id="model" position="0 0 0" scale="1 1 1" rotation="0 0 0" visible="false" shadow="cast: true"
+        gesture-handler crossorigin="anonymous"
+        animation__fadein="property: material.opacity; from: 0; to: 1; dur: 1500; startEvents: fadein">
       </a-entity>
     </a-marker>
 
