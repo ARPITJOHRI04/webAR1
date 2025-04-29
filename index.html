@@ -85,9 +85,9 @@
   <div id="loader"></div>
 
   <div id="buttons">
-    <button class="btn" onclick="changeModel('astronaut.glb')">Astronaut</button>
-    <button class="btn" onclick="changeModel('robot.glb')">Robot</button>
-    <button class="btn" onclick="changeModel('cesium-man.glb')">Cesium Man</button>
+    <button class="btn" onclick="changeModel('Astronaut.glb')">Astronaut</button>
+    <button class="btn" onclick="changeModel('RobotExpressive.glb')">Robot</button>
+    <button class="btn" onclick="changeModel('Cesium-Man.glb')">Cesium Man</button>
     <button class="btn" onclick="toggleRotation()">Toggle Rotate</button>
   </div>
 
@@ -177,9 +177,9 @@
       setTimeout(() => {
         model.setAttribute('gltf-model', filename);
         model.setAttribute('scale',
-          filename.includes('astronaut') ? '1.2 1.2 1.2' :
-          filename.includes('cesium') ? '1.5 1.5 1.5' :
-          filename.includes('robot') ? '0.7 0.7 0.7' :
+          filename.includes('Astronaut') ? '1.2 1.2 1.2' :
+          filename.includes('Cesium') ? '1.5 1.5 1.5' :
+          filename.includes('Robot') ? '0.7 0.7 0.7' :
           '1 1 1'
         );
 
@@ -208,7 +208,7 @@
     }
 
     window.addEventListener('load', () => {
-      changeModel('astronaut.glb');
+      changeModel('Astronaut.glb');
     });
   </script>
 </body>
