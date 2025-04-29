@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Arpit Johri WebAR Project</title>
 
   <!-- A-Frame + AR.js -->
@@ -35,6 +36,8 @@
       z-index: 999;
       display: flex;
       gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
     .btn {
@@ -78,25 +81,19 @@
 
 <body>
 
-  <!-- Title -->
   <div id="title">Arpit Johri WebAR Project</div>
-
-  <!-- Loading Spinner -->
   <div id="loader"></div>
 
-  <!-- Buttons -->
   <div id="buttons">
-    <button class="btn" onclick="changeModel('Astronaut.glb')">Astronaut</button>
-    <button class="btn" onclick="changeModel('RobotExpressive.glb')">Robot</button>
-    <button class="btn" onclick="changeModel('Cesium-Man.glb')">Cesium Man</button>
+    <button class="btn" onclick="changeModel('astronaut.glb')">Astronaut</button>
+    <button class="btn" onclick="changeModel('robot.glb')">Robot</button>
+    <button class="btn" onclick="changeModel('cesium-man.glb')">Cesium Man</button>
     <button class="btn" onclick="toggleRotation()">Toggle Rotate</button>
   </div>
 
-  <!-- Scene -->
   <a-scene embedded arjs="sourceType: webcam;" shadow="type: pcfsoft">
-
     <a-assets>
-      <img id="grassTexture" src="GRASS.jpg">
+      <img id="grassTexture" src="./grass.jpg" />
     </a-assets>
 
     <!-- Lighting -->
@@ -104,8 +101,6 @@
     <a-entity light="type: directional; color: #ffffff; intensity: 0.9" position="1 2 1"></a-entity>
 
     <a-marker preset="hiro">
-
-      <!-- Larger grass plane -->
       <a-plane 
         position="0 0.001 0" 
         rotation="-90 0 0" 
@@ -115,7 +110,6 @@
         shadow="receive: false">
       </a-plane>
 
-      <!-- 3D model container -->
       <a-entity id="model" 
                 position="0 0 0" 
                 scale="1 1 1"
@@ -123,15 +117,14 @@
                 visible="false"
                 shadow="cast: true"
                 gesture-handler
+                crossorigin="anonymous"
                 animation__fadein="property: material.opacity; from: 0; to: 1; dur: 1500; startEvents: fadein">
       </a-entity>
     </a-marker>
 
     <a-entity camera></a-entity>
-
   </a-scene>
 
-  <!-- Gesture Handler and Main Script -->
   <script>
     AFRAME.registerComponent('gesture-handler', {
       schema: { enabled: { default: true } },
@@ -183,10 +176,11 @@
 
       setTimeout(() => {
         model.setAttribute('gltf-model', filename);
-        model.setAttribute('scale', 
-          filename === "Astronaut.glb" ? "1.2 1.2 1.2" :  
-          filename.includes("Cesium") ? "1.5 1.5 1.5" :  
-          filename.includes("Robot") ? "0.7 0.7 0.7" : "1 1 1"
+        model.setAttribute('scale',
+          filename.includes('astronaut') ? '1.2 1.2 1.2' :
+          filename.includes('cesium') ? '1.5 1.5 1.5' :
+          filename.includes('robot') ? '0.7 0.7 0.7' :
+          '1 1 1'
         );
 
         model.addEventListener('model-loaded', () => {
@@ -214,7 +208,7 @@
     }
 
     window.addEventListener('load', () => {
-      changeModel('Astronaut.glb');
+      changeModel('astronaut.glb');
     });
   </script>
 </body>
