@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Arpit Johri WebAR Project</title>
+
+  <!-- A-Frame + AR.js -->
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.3.2/aframe/build/aframe-ar.min.js"></script>
+  <script src="https://unpkg.com/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+
+  <!-- Styles -->
+  <style>
+    body { margin: 0; overflow: hidden; font-family: 'Poppins', sans-serif; background: #121212; }
+
+    #title {
+      position: fixed;
+      top: 10px;
+      width: 100%;
+      text-align: center;
+      color: #ffffff;
+      background: rgba(30, 30, 30, 0.9);
+      padding: 10px 0;
+      font-size: 24px;
+      font-weight: bold;
+      z-index: 1000;
+      border-radius: 6px;
+    }
+
+    #buttons {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 999;
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      background: rgba(40, 40, 40, 0.9);
+      border: 1px solid #888;
+      color: #f0f0f0;
+      padding: 12px 20px;
+      font-size: 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border-color: white;
+    }
+
+    #loader {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2000;
+      border: 6px solid #ccc;
+      border-top: 6px solid #ffffff;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Title -->
+  <div id="title">Arpit Johri WebAR Project</div>
+
+  <!-- Loading Spinner -->
+  <div id="loader"></div>
+
+  <!-- Buttons -->
+  <div id="buttons">
+    <button class="btn" onclick="changeModel('Astronaut.glb')">Astronaut</button>
+    <button class="btn" onclick="changeModel('RobotExpressive.glb')">Robot</button>
+    <button class="btn" onclick="changeModel('Cesium-Man.glb')">Cesium Man</button>
+    <button class="btn" onclick="toggleRotation()">Toggle Rotate</button>
+  </div>
+
+  <!-- Scene -->
+  <a-scene embedded arjs="sourceType: webcam;" shadow="type: pcfsoft">
+
+    <a-assets>
+      <img id="grassTexture" src="GRASS.jpg">
+    </a-assets>
+
+    <!-- Lighting -->
+    <a-entity light="type: ambient; color: #999"></a-entity>
+    <a-entity light="type: directional; color: #ffffff; intensity: 0.9" position="1 2 1"></a-entity>
+
+    <a-marker preset="hiro">
+
+      <!-- Larger grass plane -->
+      <a-plane 
+        position="0 0.001 0" 
+        rotation="-90 0 0" 
+        width="3" 
+        height="3" 
+        material="shader: flat; src: #grassTexture; side: double"
+        shadow="receive: false">
+      </a-plane>
+
+      <!-- 3D model container -->
+      <a-entity id="model" 
+                position="0 0 0" 
+                scale="1 1 1"
+                rotation="0 0 0"
+                visible="false"
+                shadow="cast: true"
+                gesture-handler
+                animation__fadein="property: material.opacity; from: 0; to: 1; dur: 1500; startEvents: fadein">
+      </a-entity>
+    </a-marker>
+
+    <a-entity camera></a-entity>
+
+  </a-scene>
+
+  <!-- Gesture Handler and Main Script -->
+  <script>
+    AFRAME.registerComponent('gesture-handler', {
+      schema: { enabled: { default: true } },
+      init: function () {
+        this.handleRotation = this.handleRotation.bind(this);
+        this.el.sceneEl.addEventListener('mousedown', this.handleRotation);
+        this.el.sceneEl.addEventListener('touchstart', this.handleRotation);
+      },
+      handleRotation: function (event) {
+        if (!window.allowManualRotation) return;
+
+        const model = this.el;
+        let initialX = event.touches ? event.touches[0].clientX : event.clientX;
+
+        function rotate(e) {
+          const currentX = e.touches ? e.touches[0].clientX : e.clientX;
+          const delta = currentX - initialX;
+          model.object3D.rotation.y += delta * 0.005;
+          initialX = currentX;
+        }
+
+        function stop() {
+          window.removeEventListener('mousemove', rotate);
+          window.removeEventListener('mouseup', stop);
+          window.removeEventListener('touchmove', rotate);
+          window.removeEventListener('touchend', stop);
+        }
+
+        window.addEventListener('mousemove', rotate);
+        window.addEventListener('mouseup', stop);
+        window.addEventListener('touchmove', rotate);
+        window.addEventListener('touchend', stop);
+      }
+    });
+
+    const model = document.getElementById('model');
+    const loader = document.getElementById('loader');
+    let currentModel = '';
+    let rotating = false;
+    let rotationInterval = null;
+    window.allowManualRotation = true;
+
+    function changeModel(filename) {
+      if (filename === currentModel) return;
+
+      loader.style.display = 'block';
+      model.setAttribute('visible', 'false');
+      model.removeAttribute('gltf-model');
+
+      setTimeout(() => {
+        model.setAttribute('gltf-model', filename);
+        model.setAttribute('scale', 
+          filename === "Astronaut.glb" ? "1.2 1.2 1.2" :  
+          filename.includes("Cesium") ? "1.5 1.5 1.5" :  
+          filename.includes("Robot") ? "0.7 0.7 0.7" : "1 1 1"
+        );
+
+        model.addEventListener('model-loaded', () => {
+          loader.style.display = 'none';
+          model.setAttribute('visible', 'true');
+          model.emit('fadein');
+        }, { once: true });
+
+        currentModel = filename;
+      }, 100);
+    }
+
+    function toggleRotation() {
+      if (!rotating) {
+        rotationInterval = setInterval(() => {
+          model.object3D.rotation.y += 0.01;
+        }, 16);
+        rotating = true;
+        window.allowManualRotation = false;
+      } else {
+        clearInterval(rotationInterval);
+        rotating = false;
+        window.allowManualRotation = true;
+      }
+    }
+
+    window.addEventListener('load', () => {
+      changeModel('Astronaut.glb');
+    });
+  </script>
+</body>
+</html>
